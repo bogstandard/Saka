@@ -66,13 +66,53 @@ Route::get('/{slug}/{name?}/{tripcode?}', function (Request $request, $slug, $na
 Route::post('/!make-drawing', function(Request $request) {
 
     $request->validate([
-        'slug' => 'required',
-        'name' => 'required',
-        'trip' => 'nullable',
+        'slug' => 'required|String|max:30',
+        'name' => 'required|String|max:30',
+        'trip' => 'nullable|String|max:30',
         'lines'=> 'required'
     ]);
 
     $requestData = $request->all();
+
+    $legalDrawing = true;
+    foreach($requestData['lines'] as $line) {
+
+        $counter = 0;        
+        foreach($line as $point) {
+
+            // the data is incorrect lengths
+            if ( ( $counter == 0 && count($point) != 5 ) || 
+                ( $counter > 0 && count($point) != 2 ) ){
+
+                    $legalDrawing = false;
+                    break;
+            }
+
+            if(!$legalDrawing) break;
+
+            $legalDrawing = $legalDrawing & is_numeric($point[0]);
+            \Log::info($point[0]);
+            \Log::info($legalDrawing ? 'true' : 'false');
+
+            $legalDrawing = $legalDrawing & is_numeric($point[1]);
+
+            if($counter == 0){
+                $legalDrawing = $legalDrawing & is_numeric($point[2]);
+                $legalDrawing = $legalDrawing & is_numeric($point[3][0]);
+                $legalDrawing = $legalDrawing & is_numeric($point[3][1]);
+                $legalDrawing = $legalDrawing & is_numeric($point[3][2]);
+                $legalDrawing = $legalDrawing & is_numeric($point[4]);
+            }
+            
+            if($legalDrawing == false)
+                return response()->json(['error' => 'Bad data! Changes not saved!.'], 403); // Status code here
+
+            $counter++;
+        }
+
+    }
+
+
 
     $drawing = Drawing::where('slug', $requestData['slug'])->first();
 
@@ -94,7 +134,7 @@ Route::post('/!make-drawing', function(Request $request) {
     $drawing->save();
 
     $requestData['saved'] = $drawing->updated_at->timestamp;
-    //unset($requestData['_token']);
+
     return response()->json(
         $requestData
     );
