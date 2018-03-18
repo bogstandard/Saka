@@ -16,6 +16,7 @@ var strokeRgb = palette[5];
 var strokeAlpha = 0.75;
 
 var increment = 0;
+var active;
 
 var line = d3.line()
     .curve(d3.curveBasis);
@@ -26,7 +27,6 @@ var svg = d3.select('svg')
 
 var canvas = svg.append('g');
 
-console.log(bucketdata.lines);
 affixLines();
 
 if(bucketdata.editable) {
@@ -145,9 +145,8 @@ active.attr('id', `line_${++increment}`);
 
 function affixLines() {
     bucketdata.lines.forEach(d => {
-
         l = canvas.append('path').datum(d);
-        dt = d[d.length - 1];
+        dt = d[0];
 
         l.attr('d', line)
         .attr('stroke-width', dt[2]*2)
@@ -157,6 +156,14 @@ function affixLines() {
 
 function dumpData() {
     var lines = svg.selectAll('path').data();
+    lines = lines.map( l => {
+
+        return l.map( (d, i) => {
+            if(i===0) return d;
+            else return [d[0], d[1]];
+        });
+
+    });
     console.log(lines);
 }
 
@@ -164,9 +171,16 @@ function makeDrawing() {
 
     bucketdata.lines = svg.selectAll('path').data();
 
-    var url = '/!make-drawing';
+    bucketdata.lines = bucketdata.lines.map( l => {
 
-    fetch(url, {
+        return l.map( (d, i) => {
+            if(i===0) return d;
+            else return [d[0], d[1]];
+        });
+
+    });
+
+    fetch('/!make-drawing', {
             method: 'POST',
             body: JSON.stringify(bucketdata),
             credentials: 'same-origin',
@@ -181,7 +195,7 @@ function makeDrawing() {
         .then(response => {
 
             if(response.error){
-                console.log(response.error);
+                console.log('Error:', response.error);
                 return;
             }
             

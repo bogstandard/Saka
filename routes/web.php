@@ -65,6 +65,13 @@ Route::get('/{slug}/{name?}/{tripcode?}', function (Request $request, $slug, $na
 
 Route::post('/!make-drawing', function(Request $request) {
 
+    $request->validate([
+        'slug' => 'required',
+        'name' => 'required',
+        'trip' => 'nullable',
+        'lines'=> 'required'
+    ]);
+
     $requestData = $request->all();
 
     $drawing = Drawing::where('slug', $requestData['slug'])->first();
