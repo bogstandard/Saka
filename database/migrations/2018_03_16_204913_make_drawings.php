@@ -16,10 +16,13 @@ class MakeDrawings extends Migration
         Schema::create('drawings', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
+            $table->string('ip');
             $table->string('slug')->nullable();
             $table->string('name')->nullable();
             $table->string('trip')->nullable();
             $table->longText('lines');
+            $table->integer('width');
+            $table->integer('height');
             $table->text('session_token');
         });
     }

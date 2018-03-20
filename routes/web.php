@@ -13,6 +13,10 @@ use \App\Drawing;
 |
 */
 
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
 Route::get('/', function () {
 
     for($complexity = 2; $complexity < 30; $complexity++) {
@@ -37,8 +41,6 @@ Route::get('/', function () {
     return redirect('/'); // incredible bad luck.. no spaces found, roll the 30 sided dice again.
     
 
-
-
 });
 
 
@@ -59,6 +61,8 @@ Route::get('/{slug}/{name?}/{tripcode?}', function (Request $request, $slug, $na
         ->with('tripcode', $tripcode)
         ->with('trip', $drawing ? $drawing->trip : ($tripcode ? '!'.substr(crypt($tripcode, $tripcode),-10) : null) )
         ->with('lines', $drawing ? $drawing->lines : json_encode([]))
+        ->with('width', $drawing ? $drawing->width : false)
+        ->with('height', $drawing ? $drawing->height : false)
         ->with('drawing', $drawing ? $drawing : false);
         
 });
@@ -69,12 +73,33 @@ Route::post('/!make-drawing', function(Request $request) {
         'slug' => 'required|String|max:30',
         'name' => 'required|String|max:30',
         'trip' => 'nullable|String|max:30',
-        'lines'=> 'required'
+        'lines'=> 'required',
+        'width'=> 'required|Integer',
+        'height'=>'required|Integer',
     ]);
 
     $requestData = $request->all();
 
+    $drawing = Drawing::where('slug', $requestData['slug'])->first();
+
+    if($drawing && $drawing->session_token == $requestData['_token']) {
+        // carry on.. but check they're not posting too quickly..
+        
+    }
+    else if($drawing == null) {
+        $drawing = new Drawing;
+        $drawing->session_token = $requestData['_token'];
+        $drawing->slug = $requestData['slug'];    
+    }
+    else {
+        return response()->json(['error' => 'Session mismatch! You don\'t appear to own this drawing.'], 403); // Status code here
+    }
+
     $legalDrawing = true;
+
+    if($requestData['width'] > 6000 || $requestData['height'] > 6000)
+        return response()->json(['error' => 'Drawing too large! Changes not saved!.'], 403); // Status code here
+
     foreach($requestData['lines'] as $line) {
 
         $counter = 0;        
@@ -112,25 +137,12 @@ Route::post('/!make-drawing', function(Request $request) {
 
     }
 
-
-
-    $drawing = Drawing::where('slug', $requestData['slug'])->first();
-
-    if($drawing && $drawing->session_token == $requestData['_token']) {
-        // carry on..
-    }
-    else if($drawing == null) {
-        $drawing = new Drawing;
-        $drawing->session_token = $requestData['_token'];
-        $drawing->slug = $requestData['slug'];    
-    }
-    else {
-        return response()->json(['error' => 'Session mismatch! You don\'t appear to own this drawing.'], 403); // Status code here
-    }
-
+    $drawing->ip = $request->ip();
     $drawing->name = $requestData['name'];
     $drawing->trip = $requestData['tripcode'] ? '!'.substr(crypt($requestData['tripcode'], $requestData['tripcode']),-10) : null;
     $drawing->lines = json_encode($requestData['lines']);
+    $drawing->width = $requestData['width'];
+    $drawing->height = $requestData['height'];
     $drawing->save();
 
     $requestData['saved'] = $drawing->updated_at->timestamp;
@@ -140,8 +152,3 @@ Route::post('/!make-drawing', function(Request $request) {
     );
 
 });
-
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');

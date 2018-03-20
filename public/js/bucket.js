@@ -22,8 +22,8 @@ var line = d3.line()
     .curve(d3.curveBasis);
 
 var svg = d3.select('svg')
-    .attr('width' , window.innerWidth)
-    .attr('height' , window.innerHeight);
+    .attr('width' , bucketdata.width||window.innerWidth-50)
+    .attr('height' , bucketdata.height||window.innerHeight-50);
 
 var canvas = svg.append('g');
 
@@ -51,7 +51,6 @@ if(bucketdata.editable) {
                                     .on('click', function(d) {
                                     strokeRgb = d; recolourNib();
                                     });
-
 
     svg.call(d3.drag()
     .container(function() { return this; })
@@ -170,6 +169,8 @@ function dumpData() {
 function makeDrawing() {
 
     bucketdata.lines = svg.selectAll('path').data();
+    bucketdata.width = svg.attr('width');
+    bucketdata.height = svg.attr('height');
 
     bucketdata.lines = bucketdata.lines.map( l => {
 
@@ -179,6 +180,8 @@ function makeDrawing() {
         });
 
     });
+
+    console.log(bucketdata);
 
     fetch('/!make-drawing', {
             method: 'POST',

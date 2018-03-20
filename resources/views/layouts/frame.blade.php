@@ -14,11 +14,15 @@
 
     html, body {
         padding: 0; margin: 0;
-        overflow: hidden;
+        background: seashell;
+        text-align: center;
     }
 
     svg {
         shape-rendering: crispEdges;
+        margin: 10px auto;
+        border-radius: 5px;
+        box-shadow: 0 0 5px -2px;
     }
 
     path {
@@ -63,7 +67,9 @@ var bucketdata = {
     saved: 'Never',
     _token: '{{ csrf_token() }}',
     editable: {{ $editable ? 'true' : 'false' }},
-    lines: {{ $lines }}
+    lines: {{ $lines }},
+    width: {{ !empty($width) ? $width : 'undefined' }},
+    height: {{ !empty($height) ? $height : 'undefined' }}
 };
 </script>
 <script src="{{ asset('js/bucket.js') }}"></script>
