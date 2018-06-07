@@ -1,4 +1,4 @@
-![Saka Boy](https://raw.githubusercontent.com/bogstandard/Saka/blob/master/public/img/logo.png)
+<img src="http://saka.ericdaddio.co.uk/img/logo.png" alt="" width="190" height="200">
 
 # Saka Doodle
 
