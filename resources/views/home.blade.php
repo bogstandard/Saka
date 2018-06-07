@@ -19,5 +19,26 @@
             </div>
         </div>
     </div>
+
+    <div id="sakas-staging">
+
+        @foreach( $drawings as $drawing )
+
+            <div class="card">
+                <div class="card-body">
+
+                    {{ $drawing->name }}
+
+                </div>
+            </div>
+
+            
+
+        @endforeach
+
+        {{ $drawings->links() }}
+
+    </div>
+
 </div>
 @endsection

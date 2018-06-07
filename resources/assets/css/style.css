@@ -1,0 +1,90 @@
+
+    html, body {
+        padding: 0; margin: 0;
+        background: white;
+        font-family: sans-serif;
+    }
+
+    svg {
+        shape-rendering: crispEdges;
+        margin: 0 0;
+        position:absolute; top:0; left:0; height:100%; width:100%;
+    }
+
+    path {
+        fill: none;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+    }
+
+    circle.nib {
+        pointer-events: none;
+    }
+    circle.palette-circle {
+        fill-opacity: 0.25;
+    }
+    circle.palette-circle:hover {
+        fill-opacity: 1;
+    }
+
+    #metadata {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .modal {
+        position: fixed;
+        top: 20%;
+        left: calc(50% - 210px);
+        padding: 40px;
+        background: white;
+        box-shadow: 0 1em 5em #ccc;
+        border-radius: 0.2em;
+        display: inline-block;
+        width: 500px;
+        opacity: 1;
+        transition: all 0.25s ease-out;
+        pointer-events: all;
+        box-sizing: border-box;
+    }
+
+    .modal.hidden {
+        opacity: 0;
+        top: 30%;
+        box-shadow: 0 0 0em #fff;
+        pointer-events:none;
+    }
+
+    #links {
+        position: fixed;
+        top: 25px;
+        right: 10px;
+    }
+
+    a {
+        color: inherit;
+    }
+
+    #links a, .btn {
+        border: 1px solid;
+        padding: 0.2em;
+        border-radius: 0.2em;
+        background: white;
+        box-shadow: 0 0 0.2em #888;
+        transition: all .25s;
+        margin-left: 0.2em;
+        text-decoration: none;
+    }
+    
+
+    #links a:hover {
+        background: snow;
+        box-shadow: 0 0 0.6em #999;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #ccc;
+        width: 75%;
+    }
