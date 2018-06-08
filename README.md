@@ -46,7 +46,7 @@ composer install
 
 ## License
 
-This project has No License - see the [No License](https://choosealicense.com/no-permission/) file for details (pretty much: Don't touch until I change this or give you expressed permission)
+This project has no license - see the [No License](https://choosealicense.com/no-permission/) file for details.
 
 This will change in future, I'm aware this is a miserable way to have things - I don't like it either.
 
