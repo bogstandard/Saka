@@ -17,6 +17,7 @@
 
     <a href="#share" title="Share your doodle" onclick="toggleHidden('#share')">Share Doodle</a>
     <a href="/" title="Start a new doodle">New</a>
+    <br>
     <a href="#about" title="Learn about Saka" onclick="toggleHidden('#about')">About</a>
     <a href="#help" title="Get Help!" onclick="toggleHidden('#help')">Help</a>
 

@@ -42,7 +42,7 @@
         box-shadow: 0 1em 5em #ccc;
         border-radius: 0.2em;
         display: inline-block;
-        width: 500px;
+        max-width: 500px;
         opacity: 1;
         transition: all 0.25s ease-out;
         pointer-events: all;
@@ -60,6 +60,7 @@
         position: fixed;
         top: 25px;
         right: 10px;
+        text-align: right;
     }
 
     a {
@@ -75,6 +76,7 @@
         transition: all .25s;
         margin-left: 0.2em;
         text-decoration: none;
+        line-height: 2em;
     }
     
 
