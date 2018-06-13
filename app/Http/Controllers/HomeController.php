@@ -9,6 +9,46 @@ class HomeController extends Controller
 {
 
     /**
+     * Make a unique slug
+     * 
+     * @return String
+     */
+    public function makeSlug() {
+
+        for($complexity = 2; $complexity < 30; $complexity++) {
+            $slug = '';
+            $c  = 'bcdfghjklmnprstvwz'; //consonants except hard to speak ones
+            $v  = 'aeiou';              //vowels
+            $a  = $c.$v;                //both
+        
+            //use two syllables...
+            for($i=0;$i < $complexity; $i++){
+                $slug .= $c[rand(0, strlen($c)-1)];
+                $slug .= $v[rand(0, strlen($v)-1)];
+                $slug .= $a[rand(0, strlen($a)-1)];
+            }
+
+            $drawing = Drawing::where('slug', $slug)->first();
+            if($drawing==null)
+                return $slug; // free space found, go to it
+
+        }
+
+        return makeSlug(); // incredible bad luck.. no spaces found, roll the 30 sided dice again.
+    }
+
+    /**
+     * New drawing, editable
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function newDrawing(Request $request) {
+
+        return redirect( '/'.$this->makeSlug() );
+
+    }
+    
+    /**
      * Load drawing, either editable or not 
      * 
      * @return \Illuminate\Http\Response
@@ -16,8 +56,9 @@ class HomeController extends Controller
     public function loadDrawing(Request $request, $slug, $name = 'Anonymous', $tripcode = null) {
 
         $drawing = Drawing::where('slug', $slug)->first();
+
     
-        if( ($drawing == null) || ($drawing && $drawing->session_token == csrf_token() ) )
+        if ( ($drawing == null) || ($drawing && $drawing->session_token == csrf_token() ))
             $editable = true;
     
         else
@@ -82,10 +123,17 @@ class HomeController extends Controller
             // TO DO check they're not posting too quickly..
             
         }
-        else if($drawing == null) {
+        else if($drawing == null || $request['fork'] == true) {
+            $forkedDrawing = $drawing->replicate();
             $drawing = new Drawing;
             $drawing->session_token = $requestData['_token'];
             $drawing->slug = $requestData['slug'];    
+            if($request['fork'] == true) {
+                $slug = $this->makeSlug();
+                $requestData['slug'] = $slug;
+                $drawing->slug = $slug;
+                $drawing->lines = $forkedDrawing->lines;
+            }
         }
         else {
             return response()->json(['error' => 'Session mismatch! You don\'t appear to own this drawing.'], 403); // Status code here

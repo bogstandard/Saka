@@ -30,8 +30,25 @@ var canvas = svg.append('g');
 
 affixLines();
 
-if(!bucketdata.editable)
+if(!bucketdata.editable) {
     liveFetch();
+    svg.on('click', function(){
+        makeDrawing(true); // fork
+    });
+}
+
+var pci = 0;
+var paletteCircles = svg.append('g').selectAll('circle')
+                                .data(palette).enter().append('circle')
+                                .attr('class', 'palette-circle')
+                                .attr('cy', function(){ return ++pci%2==0 ? 20 : 30;})
+                                .attr('cx', function(){ return pci--*20;})
+                                .attr('r', 10)
+                                .attr('stroke', 'black')
+                                .attr('fill', function(d) { return `rgb(${d[0]}, ${d[1]}, ${d[2]})`})
+                                .on('click', function(d) {
+                                strokeRgb = d; recolourNib();
+                                });
 
 if(bucketdata.editable) {
 
@@ -42,19 +59,6 @@ if(bucketdata.editable) {
                             .attr('r', strokeWidth)
                             .attr('fill', `rgba(${strokeRgb[0]}, ${strokeRgb[1]}, ${strokeRgb[2]}, ${strokeAlpha-0.2})`)
                             .attr('stroke', `rgb(${strokeRgb[0]}, ${strokeRgb[1]}, ${strokeRgb[2]})`);
-
-    var pci = 0;
-    var paletteCircles = svg.append('g').selectAll('circle')
-                                    .data(palette).enter().append('circle')
-                                    .attr('class', 'palette-circle')
-                                    .attr('cy', function(){ return ++pci%2==0 ? 20 : 30;})
-                                    .attr('cx', function(){ return pci--*20;})
-                                    .attr('r', 10)
-                                    .attr('stroke', 'black')
-                                    .attr('fill', function(d) { return `rgb(${d[0]}, ${d[1]}, ${d[2]})`})
-                                    .on('click', function(d) {
-                                    strokeRgb = d; recolourNib();
-                                    });
 
     svg.call(d3.drag()
     .container(function() { return this; })
@@ -158,11 +162,12 @@ function affixLines() {
     });
 }
 
-function makeDrawing() {
+function makeDrawing(fork=false) {
 
     bucketdata.lines = svg.selectAll('path').data();
     bucketdata.width = window.innerWidth;
     bucketdata.height = window.innerHeight;
+    bucketdata.fork = fork;
 
     bucketdata.lines = bucketdata.lines.map( l => {
 
@@ -196,6 +201,9 @@ function makeDrawing() {
             
             bucketdata = response;
             document.querySelector('#metadata .saved').textContent = (Date(response.saved)).toLocaleString();
+
+            if(fork)
+                window.location.replace(`/${bucketdata.slug}`);
 
         });
 }
