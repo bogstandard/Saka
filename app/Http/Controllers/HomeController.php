@@ -124,7 +124,10 @@ class HomeController extends Controller
             
         }
         else if($drawing == null || $request['fork'] == true) {
-            $forkedDrawing = $drawing->replicate();
+            
+            if($request['fork'] == true)
+                $forkedDrawing = $drawing->replicate();
+
             $drawing = new Drawing;
             $drawing->session_token = $requestData['_token'];
             $drawing->slug = $requestData['slug'];    
