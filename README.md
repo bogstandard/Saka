@@ -1,4 +1,6 @@
-<img src="http://saka.ericdaddio.co.uk/img/logo.png" alt="" width="190" height="200">
+# Notice
+
+The example deployment of this has been removed as of 2025.
 
 # Saka Doodle
 
